@@ -12,7 +12,10 @@ const translations = {
         confirm: "Confirm",
         mustLogin: "You must log in to place a bid",
         cardRequired: "You must link a card to place a bid",
-        bidSuccess: "Bid placed successfully!"
+        bidSuccess: "Bid placed successfully!",
+        login: "Login",
+        logout: "Logout",
+        placeBid: "Place Bid"
     },
     ru: {
         minPrice: "Минимальная цена:",
@@ -23,7 +26,10 @@ const translations = {
         confirm: "Подтвердить",
         mustLogin: "Вы должны войти, чтобы сделать ставку",
         cardRequired: "Для ставки нужно привязать карту",
-        bidSuccess: "Ставка успешно сделана!"
+        bidSuccess: "Ставка успешно сделана!",
+        login: "Войти",
+        logout: "Выйти",
+        placeBid: "Сделать ставку"
     },
     es: {
         minPrice: "Precio mínimo:",
@@ -34,7 +40,10 @@ const translations = {
         confirm: "Confirmar",
         mustLogin: "Debe iniciar sesión para ofertar",
         cardRequired: "Debe vincular una tarjeta para ofertar",
-        bidSuccess: "¡Oferta realizada con éxito!"
+        bidSuccess: "¡Oferta realizada con éxito!",
+        login: "Iniciar sesión",
+        logout: "Cerrar sesión",
+        placeBid: "Ofertar"
     }
 };
 
@@ -46,6 +55,7 @@ function setLanguage(lang) {
         el.textContent = translations[lang][key];
     });
     renderProducts();
+    updateLoginButton();
 }
 
 // Загружаем товары
@@ -59,7 +69,7 @@ async function loadProducts() {
     }
 }
 
-// Рендерим товары
+// Рендер товаров
 function renderProducts(filtered = null) {
     const list = document.getElementById("product-list");
     list.innerHTML = "";
@@ -75,13 +85,13 @@ function renderProducts(filtered = null) {
                 <p>$${product.price}</p>
                 <p>${product.date}</p>
             </div>
-            <button onclick="placeBid(${product.id})" data-i18n="placeBid">Place Bid</button>
+            <button onclick="placeBid(${product.id})" data-i18n="placeBid">${translations[currentLang].placeBid}</button>
         `;
         list.appendChild(card);
     });
 }
 
-// Фильтрация
+// Фильтры
 function applyFilters() {
     const min = parseFloat(document.getElementById("price-min").value) || 0;
     const max = parseFloat(document.getElementById("price-max").value) || Infinity;
@@ -96,7 +106,7 @@ function applyFilters() {
     renderProducts(filtered);
 }
 
-// Модальное окно
+// Модальное окно карты
 function openModal() {
     document.getElementById("card-modal").style.display = "block";
 }
@@ -108,16 +118,17 @@ function closeModal() {
 function confirmCard() {
     localStorage.setItem("cardLinked", "true");
     closeModal();
-    showNotification(translations[currentLang].cardRequired, "#28a745");
+    showNotification(translations[currentLang].bidSuccess, "#28a745");
 }
 
-// Делать ставку
+// Ставка
 function placeBid(productId) {
     let loggedIn = localStorage.getItem("loggedIn") === "true";
     let cardLinked = localStorage.getItem("cardLinked") === "true";
 
     if (!loggedIn) {
         showNotification(translations[currentLang].mustLogin, "#dc3545");
+        setTimeout(() => window.location.href = "login.html", 1500);
         return;
     }
     if (!cardLinked) {
@@ -139,8 +150,29 @@ function showNotification(message, color) {
     }, 3000);
 }
 
+// Обновление кнопки входа
+function updateLoginButton() {
+    let authBtn = document.getElementById("auth-btn");
+    if (!authBtn) return;
+
+    if (localStorage.getItem("loggedIn") === "true") {
+        authBtn.textContent = translations[currentLang].logout;
+        authBtn.onclick = () => {
+            localStorage.removeItem("loggedIn");
+            localStorage.removeItem("currentUser");
+            window.location.href = "index.html";
+        };
+    } else {
+        authBtn.textContent = translations[currentLang].login;
+        authBtn.onclick = () => {
+            window.location.href = "login.html";
+        };
+    }
+}
+
 // При загрузке
 window.onload = () => {
     loadProducts();
     setLanguage(currentLang);
+    updateLoginButton();
 };
