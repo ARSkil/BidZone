@@ -6,6 +6,11 @@
       "ru": "Электросамокат",
       "es": "Patinete eléctrico"
     },
+    "category": {
+      "en": "Vehicles",
+      "ru": "Транспорт",
+      "es": "Vehículos"
+    },
     "price": 350,
     "date": "2025-07-25",
     "image": "assets/sample1.jpg"
@@ -16,6 +21,11 @@
       "en": "Smartphone",
       "ru": "Смартфон",
       "es": "Teléfono inteligente"
+    },
+    "category": {
+      "en": "Electronics",
+      "ru": "Электроника",
+      "es": "Electrónica"
     },
     "price": 600,
     "date": "2025-07-28",
@@ -28,6 +38,11 @@
       "ru": "Беспроводные наушники",
       "es": "Auriculares inalámbricos"
     },
+    "category": {
+      "en": "Electronics",
+      "ru": "Электроника",
+      "es": "Electrónica"
+    },
     "price": 120,
     "date": "2025-07-20",
     "image": "assets/sample3.jpg"
@@ -39,8 +54,109 @@
       "ru": "Игровой ноутбук",
       "es": "Portátil para juegos"
     },
+    "category": {
+      "en": "Computers",
+      "ru": "Компьютеры",
+      "es": "Ordenadores"
+    },
     "price": 1500,
     "date": "2025-07-18",
     "image": "assets/sample4.jpg"
+  },
+  {
+    "id": 5,
+    "title": {
+      "en": "Mountain Bike",
+      "ru": "Горный велосипед",
+      "es": "Bicicleta de montaña"
+    },
+    "category": {
+      "en": "Vehicles",
+      "ru": "Транспорт",
+      "es": "Vehículos"
+    },
+    "price": 800,
+    "date": "2025-07-22",
+    "image": "assets/sample5.jpg"
+  },
+  {
+    "id": 6,
+    "title": {
+      "en": "Digital Camera",
+      "ru": "Цифровая камера",
+      "es": "Cámara digital"
+    },
+    "category": {
+      "en": "Electronics",
+      "ru": "Электроника",
+      "es": "Electrónica"
+    },
+    "price": 450,
+    "date": "2025-07-21",
+    "image": "assets/sample6.jpg"
+  },
+  {
+    "id": 7,
+    "title": {
+      "en": "Office Chair",
+      "ru": "Офисное кресло",
+      "es": "Silla de oficina"
+    },
+    "category": {
+      "en": "Furniture",
+      "ru": "Мебель",
+      "es": "Muebles"
+    },
+    "price": 150,
+    "date": "2025-07-15",
+    "image": "assets/sample7.jpg"
+  },
+  {
+    "id": 8,
+    "title": {
+      "en": "Coffee Maker",
+      "ru": "Кофеварка",
+      "es": "Cafetera"
+    },
+    "category": {
+      "en": "Home Appliances",
+      "ru": "Бытовая техника",
+      "es": "Electrodomésticos"
+    },
+    "price": 90,
+    "date": "2025-07-17",
+    "image": "assets/sample8.jpg"
+  },
+  {
+    "id": 9,
+    "title": {
+      "en": "Smartwatch",
+      "ru": "Умные часы",
+      "es": "Reloj inteligente"
+    },
+    "category": {
+      "en": "Electronics",
+      "ru": "Электроника",
+      "es": "Electrónica"
+    },
+    "price": 200,
+    "date": "2025-07-19",
+    "image": "assets/sample9.jpg"
+  },
+  {
+    "id": 10,
+    "title": {
+      "en": "Bookshelf",
+      "ru": "Книжный шкаф",
+      "es": "Estantería"
+    },
+    "category": {
+      "en": "Furniture",
+      "ru": "Мебель",
+      "es": "Muebles"
+    },
+    "price": 120,
+    "date": "2025-07-23",
+    "image": "assets/sample10.jpg"
   }
 ]
