@@ -1,14 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BidZone - Login / Register</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>BidZone - Login / Register</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="auth.js"></script>
 </head>
-    <button onclick="fbLogin()" style="background:#1877f2;color:#fff;padding:10px 18px;border:none;border-radius:6px;cursor:pointer;">
-  Login with Facebook
-</button>
+<body>
+
+<header>
+  <div class="logo">BidZone</div>
+</header>
+
+<main class="auth-container">
+  <h2>Login / Register</h2>
+
+  <input type="text" id="username" placeholder="Username">
+  <input type="password" id="password" placeholder="Password">
+
+  <div class="auth-buttons">
+    <button onclick="login()">Login</button>
+    <button onclick="register()">Register</button>
+  </div>
+</main>
+
+</body>
+</html>
+
 
 <body>
 
@@ -154,5 +172,6 @@ window.onload = () => {
 };
 </body>
 </html>
+
 
 
