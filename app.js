@@ -43,6 +43,7 @@ const translations = {
 let currentLang = localStorage.getItem("lang") || "en";
 let filteredProducts = null;
 
+// Установка языка
 function setLanguage(lang) {
     currentLang = lang;
     localStorage.setItem("lang", lang);
@@ -50,15 +51,20 @@ function setLanguage(lang) {
         const key = el.getAttribute("data-i18n");
         el.textContent = translations[lang][key];
     });
-    renderProducts(filteredProducts); // сохраняем фильтр при смене языка
+    renderProducts(filteredProducts);
     updateLoginButton();
+}
+
+// Загрузка товаров (заглушка)
+async function loadProducts() {
+    // здесь твоя логика загрузки products
 }
 
 // Рендер товаров
 function renderProducts(filtered = null) {
     const list = document.getElementById("product-list");
     list.innerHTML = "";
-    const productsToRender = filtered || products; // products — твой массив товаров
+    const productsToRender = filtered || products;
     productsToRender.forEach(product => {
         const card = document.createElement("div");
         card.className = "product-card";
@@ -74,7 +80,7 @@ function renderProducts(filtered = null) {
     });
 }
 
-// Фильтры
+// Применение фильтров
 function applyFilters() {
     const min = parseFloat(document.getElementById("price-min").value) || 0;
     const max = parseFloat(document.getElementById("price-max").value) || Infinity;
@@ -127,10 +133,11 @@ function showNotification(message, color) {
     }, 3000);
 }
 
-// Обновление кнопки входа/выхода
+// Кнопка входа/выхода
 function updateLoginButton() {
     let authBtn = document.getElementById("auth-btn");
     if (!authBtn) return;
+
     if (localStorage.getItem("loggedIn") === "true") {
         authBtn.textContent = translations[currentLang].logout;
         authBtn.onclick = () => {
@@ -146,6 +153,7 @@ function updateLoginButton() {
     }
 }
 
+// При загрузке страницы
 window.onload = () => {
     loadProducts();
     setLanguage(currentLang);
