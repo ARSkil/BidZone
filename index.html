@@ -1,48 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BidZone - Online Auction</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BidZone - Online Auction</title>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-
 <header>
-    <div class="logo">
-        <img src="assets/logo.png" alt="BidZone Logo">
-        <h1>BidZone</h1>
-    </div>
-    <nav>
-        <button id="auth-btn" data-i18n="login">Login</button>
-    </nav>
+  <div class="logo">
+    <img src="assets/logo.png" alt="BidZone Logo" />
+    <h1>BidZone</h1>
+  </div>
+  <nav>
+    <select id="lang-select" aria-label="Select language">
+      <option value="en">English</option>
+      <option value="ru">Русский</option>
+      <option value="es">Español</option>
+    </select>
+    <button id="auth-btn">Login</button>
+  </nav>
 </header>
 
-
 <section class="filters">
-    <label data-i18n="minPrice">Min price:</label>
-    <input type="number" id="price-min">
-
-    <label data-i18n="maxPrice">Max price:</label>
-    <input type="number" id="price-max">
-
-    <button onclick="applyFilters()" data-i18n="filter">Filter</button>
+  <label for="price-min" data-i18n="minPrice">Min price:</label>
+  <input type="number" id="price-min" min="0" placeholder="0" />
+  <label for="price-max" data-i18n="maxPrice">Max price:</label>
+  <input type="number" id="price-max" min="0" placeholder="∞" />
+  
+  <label for="category-filter" data-i18n="category">Category:</label>
+  <select id="category-filter">
+    <option value="all" data-i18n="allCategories">All Categories</option>
+    <!-- Категории будут динамически добавляться из данных -->
+  </select>
+  
+  <button id="filter-btn" data-i18n="filter">Filter</button>
 </section>
-
 
 <main id="product-list" class="product-list"></main>
 
 <!-- Модальное окно привязки карты -->
-<div id="card-modal" class="modal">
-    <div class="modal-content">
-        <h2 data-i18n="cardRequired">You must link a card to place a bid</h2>
-        <button onclick="confirmCard()" data-i18n="confirm">Confirm</button>
-        <button onclick="closeModal()" data-i18n="cancel">Cancel</button>
-    </div>
+<div id="card-modal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h2 data-i18n="cardRequired">You must link a card to place a bid</h2>
+    <button id="confirm-card-btn" data-i18n="confirm">Confirm</button>
+    <button id="cancel-card-btn" data-i18n="cancel">Cancel</button>
+  </div>
 </div>
 
 <script src="main.js"></script>
 </body>
 </html>
-
