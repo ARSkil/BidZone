@@ -16,39 +16,120 @@
 </header>
 
 <main class="auth-container">
-    <h2>Login / Register</h2>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
+    <h2 data-i18n="loginRegister">Login / Register</h2>
+    <input type="text" id="username" placeholder="Username" data-i18n-placeholder="username">
+    <input type="password" id="password" placeholder="Password" data-i18n-placeholder="password">
 
-    <button onclick="login()">Login</button>
-    <button onclick="register()">Register</button>
+    <button onclick="login()" data-i18n="login">Login</button>
+    <button onclick="register()" data-i18n="register">Register</button>
 </main>
 
 <script>
+// Используем общий translations из главного JS
+if (typeof translations === "undefined") {
+    var translations = {
+        en: {
+            loginRegister: "Login / Register",
+            username: "Username",
+            password: "Password",
+            login: "Login",
+            register: "Register",
+            enterCredentials: "Enter username and password",
+            userExists: "User already exists",
+            regSuccess: "Registration successful! You are now logged in.",
+            invalidCreds: "Invalid credentials",
+            shortUser: "Username must be at least 3 characters",
+            shortPass: "Password must be at least 5 characters"
+        },
+        ru: {
+            loginRegister: "Вход / Регистрация",
+            username: "Имя пользователя",
+            password: "Пароль",
+            login: "Войти",
+            register: "Регистрация",
+            enterCredentials: "Введите имя пользователя и пароль",
+            userExists: "Пользователь уже существует",
+            regSuccess: "Регистрация успешна! Вы вошли в систему.",
+            invalidCreds: "Неверные данные",
+            shortUser: "Имя пользователя должно быть не короче 3 символов",
+            shortPass: "Пароль должен быть не короче 5 символов"
+        },
+        es: {
+            loginRegister: "Iniciar sesión / Registrarse",
+            username: "Nombre de usuario",
+            password: "Contraseña",
+            login: "Iniciar sesión",
+            register: "Registrarse",
+            enterCredentials: "Ingrese nombre de usuario y contraseña",
+            userExists: "El usuario ya existe",
+            regSuccess: "¡Registro exitoso! Ya has iniciado sesión.",
+            invalidCreds: "Credenciales inválidas",
+            shortUser: "El nombre de usuario debe tener al menos 3 caracteres",
+            shortPass: "La contraseña debe tener al menos 5 caracteres"
+        }
+    };
+}
+
+let currentLang = localStorage.getItem("lang") || "en";
+
+// Устанавливаем язык
+function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem("lang", lang);
+
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+        el.textContent = translations[lang][el.getAttribute("data-i18n")];
+    });
+
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+        el.placeholder = translations[lang][el.getAttribute("data-i18n-placeholder")];
+    });
+}
+
+function notify(msgKey) {
+    alert(translations[currentLang][msgKey]);
+}
+
+// Регистрация
 function register() {
-    let username = document.getElementById("username").value.trim();
+    let username = document.getElementById("username").value.trim().toLowerCase();
     let password = document.getElementById("password").value.trim();
 
     if (!username || !password) {
-        alert("Enter username and password");
+        notify("enterCredentials");
+        return;
+    }
+    if (username.length < 3) {
+        notify("shortUser");
+        return;
+    }
+    if (password.length < 5) {
+        notify("shortPass");
         return;
     }
 
     let users = JSON.parse(localStorage.getItem("users") || "[]");
 
     if (users.find(u => u.username === username)) {
-        alert("User already exists");
+        notify("userExists");
         return;
     }
 
+    // Сохраняем нового пользователя
     users.push({ username, password });
     localStorage.setItem("users", JSON.stringify(users));
 
-    alert("Registration successful! You can now login.");
+    // Сразу входим
+    localStorage.setItem("loggedIn", "true");
+    localStorage.setItem("currentUser", username);
+
+    notify("regSuccess");
+    window.location.href = "index.html";
 }
 
+// Логин
 function login() {
-    let username = document.getElementById("username").value.trim();
+    let username = document.getElementById("username").value.trim().toLowerCase();
     let password = document.getElementById("password").value.trim();
 
     let users = JSON.parse(localStorage.getItem("users") || "[]");
@@ -58,12 +139,15 @@ function login() {
     if (user) {
         localStorage.setItem("loggedIn", "true");
         localStorage.setItem("currentUser", username);
-        alert("Login successful!");
         window.location.href = "index.html";
     } else {
-        alert("Invalid credentials");
+        notify("invalidCreds");
     }
 }
+
+window.onload = () => {
+    setLanguage(currentLang);
+};
 </script>
 
 </body>
