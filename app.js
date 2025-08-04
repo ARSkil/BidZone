@@ -1,3 +1,27 @@
+function handleGoogleCredentialResponse(response) {
+  // response.credential - JWT токен с инфо о пользователе
+  // Можно декодировать, получить email и имя
+  const userObject = parseJwt(response.credential);
+  console.log("Google User:", userObject);
+  // Сохраняй логин как обычно
+  localStorage.setItem("loggedIn", "true");
+  localStorage.setItem("currentUser", userObject.email || userObject.name);
+  alert("Login with Google successful!");
+  window.location.href = "index.html";
+}
+
+// JWT парсер (простая функция)
+function parseJwt(token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+  ).join(''));
+  return JSON.parse(jsonPayload);
+}
+
+window.handleGoogleCredentialResponse = handleGoogleCredentialResponse;
+
 const translations = {
     en: {
         minPrice: "Min price:",
