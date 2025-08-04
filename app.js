@@ -1,3 +1,19 @@
+</script>
+<div id="g_id_onload"
+     data-client_id="ВАШ_GOOGLE_CLIENT_ID"
+     data-login_uri="https://yourdomain.com/google-login-callback"
+     data-auto_prompt="false">
+</div>
+
+<div class="g_id_signin"
+     data-type="standard"
+     data-shape="rectangular"
+     data-theme="outline"
+     data-text="signin_with"
+     data-size="large"
+     data-logo_alignment="left">
+</div>
+
 function handleGoogleCredentialResponse(response) {
   // response.credential - JWT токен с инфо о пользователе
   // Можно декодировать, получить email и имя
