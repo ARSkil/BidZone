@@ -1,310 +1,54 @@
-/* Сброс и базовые стили */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
-
 body {
-  background-color: #f9faff;
-  color: #222;
-  line-height: 1.5;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f9fafb;
 }
 
-/* Шапка */
 header {
-  background-color: #1e40af; /* насыщенный синий */
-  color: white;
-  padding: 15px 20px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-header .logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-header .logo img {
-  height: 40px;
-  width: 40px;
-  object-fit: contain;
-}
-
-header .logo h1 {
-  font-weight: 700;
-  font-size: 1.6rem;
-  user-select: none;
-}
-
-nav {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-/* Выпадающий список языка */
-#lang-select {
-  padding: 6px 10px;
-  border-radius: 5px;
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-  background-color: white;
-  color: #1e40af;
-  font-weight: 600;
-  box-shadow: 0 0 6px rgb(30 64 175 / 0.3);
-  transition: background-color 0.3s ease;
-}
-
-#lang-select:hover {
-  background-color: #dde4f8;
-}
-
-/* Кнопка входа/выход */
-#auth-btn {
-  background-color: #2563eb;
-  border: none;
-  color: white;
-  font-weight: 600;
-  padding: 8px 18px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-size: 1rem;
-  user-select: none;
-}
-
-#auth-btn:hover {
-  background-color: #1d4ed8;
-}
-
-/* Фильтры */
-.filters {
   padding: 15px 20px;
-  background-color: white;
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-  align-items: center;
-  border-bottom: 2px solid #e2e8f0;
-  user-select: none;
-}
-
-.filters label {
-  font-weight: 600;
-  color: #334155;
-}
-
-.filters input[type="number"],
-.filters select {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1.5px solid #cbd5e1;
-  font-size: 1rem;
-  width: 120px;
-  transition: border-color 0.3s ease;
-  color: #0f172a;
-}
-
-.filters input[type="number"]:focus,
-.filters select:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 6px rgb(37 99 235 / 0.5);
-}
-
-#filter-btn {
-  background-color: #2563eb;
-  border: none;
+  background: #111827;
   color: white;
-  padding: 8px 22px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-size: 1rem;
 }
 
-#filter-btn:hover {
-  background-color: #1d4ed8;
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
-/* Список товаров */
-.product-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
-  gap: 20px;
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto 50px auto;
-}
-
-/* Карточка товара */
-.product-card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 14px rgb(0 0 0 / 0.1);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: box-shadow 0.3s ease;
-  user-select: none;
-}
-
-.product-card:hover {
-  box-shadow: 0 6px 20px rgb(0 0 0 / 0.15);
-}
-
-.product-card img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-}
-
-.product-info {
-  padding: 15px 18px;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.product-info h3 {
-  font-size: 1.1rem;
-  margin-bottom: 8px;
-  color: #1e293b;
-  font-weight: 700;
-}
-
-.product-info p {
-  color: #475569;
-  font-size: 0.9rem;
-  margin-bottom: 6px;
-  user-select: text;
-}
-
-.product-info .price {
-  font-weight: 700;
-  color: #2563eb;
-  font-size: 1.1rem;
-}
-
-.product-info .date {
-  font-style: italic;
-  font-size: 0.85rem;
-  color: #64748b;
-  margin-bottom: 12px;
-}
-
-.product-info .category {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: #475569;
-  margin-bottom: 10px;
-  text-transform: capitalize;
-}
-
-/* Кнопка Сделать ставку */
-.product-info button {
-  background-color: #2563eb;
-  border: none;
-  color: white;
-  font-weight: 700;
-  padding: 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-  user-select: none;
-}
-
-.product-info button:hover {
-  background-color: #1e40af;
-}
-
-/* Модальное окно */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 12px;
-  padding: 30px 40px;
+.auth-container {
   max-width: 400px;
-  width: 90%;
-  box-shadow: 0 4px 20px rgb(0 0 0 / 0.15);
-  text-align: center;
-  user-select: none;
+  margin: 40px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.modal-content h2 {
-  margin-bottom: 25px;
-  color: #1e293b;
-  font-weight: 700;
-  font-size: 1.3rem;
-}
-
-.modal-content button {
-  margin: 0 10px;
-  padding: 10px 22px;
-  font-size: 1rem;
+.auth-container input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.auth-buttons button {
+  flex: 1;
+  padding: 10px;
   border: none;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-#confirm-card-btn {
-  background-color: #2563eb;
+  background: #2563eb;
   color: white;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-#confirm-card-btn:hover {
-  background-color: #1e40af;
-}
-
-#cancel-card-btn {
-  background-color: #e2e8f0;
-  color: #64748b;
-}
-
-#cancel-card-btn:hover {
-  background-color: #cbd5e1;
-}
-
-/* Адаптив */
-@media (max-width: 600px) {
-  .filters {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .filters input[type="number"],
-  .filters select {
-    width: 100%;
-  }
-
-  .product-list {
-    grid-template-columns: 1fr;
-  }
+button:hover {
+  opacity: 0.9;
 }
