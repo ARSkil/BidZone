@@ -1,9 +1,4 @@
-</script>
-<div id="g_id_onload"
-     data-client_id="ВАШ_GOOGLE_CLIENT_ID"
-     data-login_uri="https://yourdomain.com/google-login-callback"
-     data-auto_prompt="false">
-</div>
+
 
 <div class="g_id_signin"
      data-type="standard"
@@ -82,6 +77,13 @@ const translations = {
 
 let currentLang = localStorage.getItem("lang") || "en";
 let filteredProducts = null;
+
+</script>
+<div id="g_id_onload"
+     data-client_id="ВАШ_GOOGLE_CLIENT_ID"
+     data-login_uri="https://yourdomain.com/google-login-callback"
+     data-auto_prompt="false">
+</div>
 
 // Установка языка
 function setLanguage(lang) {
