@@ -1,202 +1,198 @@
+require('dotenv').config();
+const express = require('express');
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
+const bcrypt = require('bcryptjs');
+const bodyParser = require('body-parser');
+const fs = require('fs');
+const path = require('path');
 
+const app = express();
+const PORT = 3000;
 
-<div class="g_id_signin"
-     data-type="standard"
-     data-shape="rectangular"
-     data-theme="outline"
-     data-text="signin_with"
-     data-size="large"
-     data-logo_alignment="left">
-</div>
-
-function handleGoogleCredentialResponse(response) {
-  // response.credential - JWT токен с инфо о пользователе
-  // Можно декодировать, получить email и имя
-  const userObject = parseJwt(response.credential);
-  console.log("Google User:", userObject);
-  // Сохраняй логин как обычно
-  localStorage.setItem("loggedIn", "true");
-  localStorage.setItem("currentUser", userObject.email || userObject.name);
-  alert("Login with Google successful!");
-  window.location.href = "index.html";
+// Хранилище пользователей (файл)
+const usersFile = path.join(__dirname, 'users.json');
+function loadUsers() {
+  const data = fs.readFileSync(usersFile, 'utf8');
+  return JSON.parse(data);
+}
+function saveUsers(users) {
+  fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
 }
 
-// JWT парсер (простая функция)
-function parseJwt(token) {
-  const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-  ).join(''));
-  return JSON.parse(jsonPayload);
-}
+// Настройка middlewares
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'secretkey',
+  resave: false,
+  saveUninitialized: false,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
-window.handleGoogleCredentialResponse = handleGoogleCredentialResponse;
+// Passport локальная стратегия (логин/пароль)
+passport.use(new LocalStrategy((username, password, done) => {
+  const users = loadUsers();
+  const user = users.find(u => u.username === username);
+  if (!user) {
+    return done(null, false, { message: 'Incorrect username.' });
+  }
+  if (!bcrypt.compareSync(password, user.password)) {
+    return done(null, false, { message: 'Incorrect password.' });
+  }
+  return done(null, user);
+}));
 
-const translations = {
-    en: {
-        minPrice: "Min price:",
-        maxPrice: "Max price:",
-        filter: "Filter",
-        confirm: "Confirm",
-        mustLogin: "You must log in to place a bid",
-        cardRequired: "You must link a card to place a bid",
-        cardLinked: "Card linked successfully!",
-        bidSuccess: "Bid placed successfully!",
-        login: "Login",
-        logout: "Logout",
-        placeBid: "Place Bid"
-    },
-    ru: {
-        minPrice: "Минимальная цена:",
-        maxPrice: "Максимальная цена:",
-        filter: "Фильтр",
-        confirm: "Подтвердить",
-        mustLogin: "Вы должны войти, чтобы сделать ставку",
-        cardRequired: "Для ставки нужно привязать карту",
-        cardLinked: "Карта успешно привязана!",
-        bidSuccess: "Ставка успешно сделана!",
-        login: "Войти",
-        logout: "Выйти",
-        placeBid: "Сделать ставку"
-    },
-    es: {
-        minPrice: "Precio mínimo:",
-        maxPrice: "Precio máximo:",
-        filter: "Filtrar",
-        confirm: "Confirmar",
-        mustLogin: "Debe iniciar sesión para ofertar",
-        cardRequired: "Debe vincular una tarjeta para ofertar",
-        cardLinked: "¡Tarjeta vinculada con éxito!",
-        bidSuccess: "¡Oferta realizada con éxito!",
-        login: "Iniciar sesión",
-        logout: "Cerrar sesión",
-        placeBid: "Ofertar"
-    }
-};
+// Passport Google OAuth
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: process.env.GOOGLE_CALLBACK_URL
+}, (accessToken, refreshToken, profile, done) => {
+  let users = loadUsers();
+  let user = users.find(u => u.googleId === profile.id);
+  if (!user) {
+    // создаём нового
+    user = {
+      id: users.length + 1,
+      googleId: profile.id,
+      username: profile.displayName,
+    };
+    users.push(user);
+    saveUsers(users);
+  }
+  return done(null, user);
+}));
 
-let currentLang = localStorage.getItem("lang") || "en";
-let filteredProducts = null;
+// Passport Facebook OAuth
+passport.use(new FacebookStrategy({
+  clientID: process.env.FACEBOOK_APP_ID,
+  clientSecret: process.env.FACEBOOK_APP_SECRET,
+  callbackURL: process.env.FACEBOOK_CALLBACK_URL,
+  profileFields: ['id', 'displayName', 'emails']
+}, (accessToken, refreshToken, profile, done) => {
+  let users = loadUsers();
+  let user = users.find(u => u.facebookId === profile.id);
+  if (!user) {
+    user = {
+      id: users.length + 1,
+      facebookId: profile.id,
+      username: profile.displayName,
+    };
+    users.push(user);
+    saveUsers(users);
+  }
+  return done(null, user);
+}));
 
-</script>
-<div id="g_id_onload"
-     data-client_id="ВАШ_GOOGLE_CLIENT_ID"
-     data-login_uri="https://yourdomain.com/google-login-callback"
-     data-auto_prompt="false">
-</div>
+// Сериализация пользователя
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+passport.deserializeUser((id, done) => {
+  const users = loadUsers();
+  const user = users.find(u => u.id === id);
+  done(null, user);
+});
 
-// Установка языка
-function setLanguage(lang) {
-    currentLang = lang;
-    localStorage.setItem("lang", lang);
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.getAttribute("data-i18n");
-        el.textContent = translations[lang][key];
-    });
-    renderProducts(filteredProducts);
-    updateLoginButton();
-}
+// --- Маршруты ---
 
-// Загрузка товаров (заглушка)
-async function loadProducts() {
-    // здесь твоя логика загрузки products
-}
+app.get('/', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.send(`<h1>Welcome, ${req.user.username}!</h1><a href="/logout">Logout</a>`);
+  } else {
+    res.send('<h1>Home</h1><a href="/login">Login</a> | <a href="/register">Register</a>');
+  }
+});
 
-// Рендер товаров
-function renderProducts(filtered = null) {
-    const list = document.getElementById("product-list");
-    list.innerHTML = "";
-    const productsToRender = filtered || products;
-    productsToRender.forEach(product => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-            <div>
-                <h3>${product.name}</h3>
-                <p>$${product.price}</p>
-                <p>${product.date}</p>
-            </div>
-            <button onclick="placeBid(${product.id})" data-i18n="placeBid">${translations[currentLang].placeBid}</button>
-        `;
-        list.appendChild(card);
-    });
-}
+// Форма регистрации
+app.get('/register', (req, res) => {
+  res.send(`
+    <h2>Register</h2>
+    <form method="post" action="/register">
+      <input name="username" placeholder="Username" required />
+      <input type="password" name="password" placeholder="Password" required />
+      <button type="submit">Register</button>
+    </form>
+    <a href="/login">Login</a>
+  `);
+});
 
-// Применение фильтров
-function applyFilters() {
-    const min = parseFloat(document.getElementById("price-min").value) || 0;
-    const max = parseFloat(document.getElementById("price-max").value) || Infinity;
-    filteredProducts = products.filter(p => p.price >= min && p.price <= max);
-    renderProducts(filteredProducts);
-}
+// Обработка регистрации
+app.post('/register', (req, res) => {
+  let users = loadUsers();
+  const { username, password } = req.body;
 
-// Модальное окно
-function openModal() {
-    document.getElementById("card-modal").style.display = "block";
-}
+  if (users.find(u => u.username === username)) {
+    return res.send('User already exists. <a href="/register">Try again</a>');
+  }
 
-function closeModal() {
-    document.getElementById("card-modal").style.display = "none";
-}
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  const newUser = {
+    id: users.length + 1,
+    username,
+    password: hashedPassword
+  };
 
-function confirmCard() {
-    localStorage.setItem("cardLinked", "true");
-    closeModal();
-    showNotification(translations[currentLang].cardLinked, "#28a745");
-}
+  users.push(newUser);
+  saveUsers(users);
 
-// Ставка
-function placeBid(productId) {
-    let loggedIn = localStorage.getItem("loggedIn") === "true";
-    let cardLinked = localStorage.getItem("cardLinked") === "true";
+  res.redirect('/login');
+});
 
-    if (!loggedIn) {
-        showNotification(translations[currentLang].mustLogin, "#dc3545");
-        setTimeout(() => window.location.href = "login.html", 1500);
-        return;
-    }
-    if (!cardLinked) {
-        openModal();
-        return;
-    }
+// Форма логина
+app.get('/login', (req, res) => {
+  res.send(`
+    <h2>Login</h2>
+    <form method="post" action="/login">
+      <input name="username" placeholder="Username" required />
+      <input type="password" name="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <a href="/register">Register</a>
+    <br><br>
+    <a href="/auth/google">Login with Google</a><br>
+    <a href="/auth/facebook">Login with Facebook</a>
+  `);
+});
 
-    showNotification(translations[currentLang].bidSuccess, "#28a745");
-}
+// Обработка логина
+app.post('/login',
+  passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/login?error=true'
+  })
+);
 
-// Уведомления
-function showNotification(message, color) {
-    const note = document.createElement("div");
-    note.className = "notification";
-    note.style.background = color;
-    note.textContent = message;
-    document.body.appendChild(note);
-    setTimeout(() => {
-        note.remove();
-    }, 3000);
-}
+// Google OAuth маршруты
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => { res.redirect('/'); }
+);
 
-// Кнопка входа/выхода
-function updateLoginButton() {
-    let authBtn = document.getElementById("auth-btn");
-    if (!authBtn) return;
+// Facebook OAuth маршруты
+app.get('/auth/facebook',
+  passport.authenticate('facebook', { scope: ['email'] })
+);
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  (req, res) => { res.redirect('/'); }
+);
 
-    if (localStorage.getItem("loggedIn") === "true") {
-        authBtn.textContent = translations[currentLang].logout;
-        authBtn.onclick = () => {
-            localStorage.removeItem("loggedIn");
-            localStorage.removeItem("currentUser");
-            window.location.href = "index.html";
-        };
-    } else {
-        authBtn.textContent = translations[currentLang].login;
-        authBtn.onclick = () => {
-            window.location.href = "login.html";
-        };
-    }
-}
+// Выход
+app.get('/logout', (req, res) => {
+  req.logout(() => {
+    res.redirect('/');
+  });
+});
 
-// При загрузке страницы
-window.onload = () => {
-    loadProducts();
-    setLanguage(currentLang);
-};
+// Запуск сервера
+app.listen(PORT, () => {
+  console.log(`Server started at http://localhost:${PORT}`);
+});
